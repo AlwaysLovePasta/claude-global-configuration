@@ -77,7 +77,7 @@ bash install.sh
 
 ## 版本
 
-以 [SemVer](https://semver.org/) 管理：
+當前版本記錄於 [`VERSION`](VERSION)，以 [SemVer](https://semver.org/) 管理：
 
 | 版本號 | 情境 |
 |--------|------|
