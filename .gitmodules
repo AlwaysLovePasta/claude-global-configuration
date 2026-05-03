@@ -1,0 +1,3 @@
+[submodule "profiles/android-dev"]
+	path = profiles/android-dev
+	url = https://github.com/AlwaysLovePasta/claude-android-dev.git

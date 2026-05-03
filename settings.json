@@ -1,0 +1,15 @@
+{
+  "effortLevel": "medium",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/load-profile.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
