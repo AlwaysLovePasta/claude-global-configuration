@@ -27,8 +27,28 @@ fi
 # if [[ -f "$PROJECT_DIR/Cargo.toml" ]]; then LOADED_PROFILE="rust"; fi
 # if [[ -f "$PROJECT_DIR/go.mod" ]]; then LOADED_PROFILE="golang"; fi
 
+# ── 清除上次 session 的 profile skills symlinks ──────────────────────────
+ACTIVE_SKILLS_FILE="$HOME/.claude/.active-profile-skills"
+if [[ -f "$ACTIVE_SKILLS_FILE" ]]; then
+  while IFS= read -r skill_name; do
+    [[ -n "$skill_name" ]] && rm -f "$HOME/.claude/skills/$skill_name"
+  done < "$ACTIVE_SKILLS_FILE"
+fi
+> "$ACTIVE_SKILLS_FILE"
+
 # ── 無符合條件：靜默退出 ─────────────────────────────────────────────────
 [[ -z "$LOADED_PROFILE" ]] && exit 0
+
+# ── Symlink 對應 profile 的 skills 進 ~/.claude/skills/ ──────────────────
+SKILLS_SRC="$PROFILES_DIR/$LOADED_PROFILE/skills"
+if [[ -d "$SKILLS_SRC" ]]; then
+  for skill_dir in "$SKILLS_SRC"/*/; do
+    [[ -d "$skill_dir" ]] || continue
+    skill_name="$(basename "$skill_dir")"
+    ln -sfn "$skill_dir" "$HOME/.claude/skills/$skill_name"
+    echo "$skill_name" >> "$ACTIVE_SKILLS_FILE"
+  done
+fi
 
 PROFILE_DIR="$PROFILES_DIR/$LOADED_PROFILE"
 PROFILE_FILE="$PROFILE_DIR/CLAUDE.md"
