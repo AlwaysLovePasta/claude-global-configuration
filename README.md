@@ -31,6 +31,14 @@ Claude Code 的全局設置倉庫。將 `~/.claude/` 下可版控的設置集中
 
 依專案類型分組的設置集合，每個 profile 是獨立目錄，可包含自己的 `CLAUDE.md`、`rules/`、`skills/`、`detect.json`（宣告偵測條件）。新增 profile 只需新增目錄，不用改動 `hooks/load-profile.sh`。
 
+部分 profile（如 `profiles/android`）是獨立 repo，以 git submodule 掛載。更新流程：
+
+1. 到該 profile 自己的 repo（獨立 clone）修改內容、commit、push
+2. 回到 `profiles/<name>` 執行 `git pull`，同步最新內容
+3. 回外層 repo 根目錄 `git add profiles/<name>` 並 commit，把新的 submodule commit 指標記錄下來
+
+不要直接在 `profiles/<name>` 這個 submodule checkout 裡編輯內容，避免跟獨立 repo 分岔。
+
 ### rules/（尚未建立）
 
 跨專案共用（不限特定 profile）的模組化規則，結構與用法比照 `.claude/rules/` 原生機制：獨立 Markdown 檔案，可在 YAML frontmatter 設定 `paths` 欄位，讓規則僅在 Claude 操作符合路徑 glob 的檔案時才載入。
