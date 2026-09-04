@@ -9,10 +9,10 @@ Claude Code 的全局設置倉庫。將 `~/.claude/` 下可版控的設置集中
 ├── CLAUDE.md        # 全局行為指引
 ├── settings.json    # 全局設定檔
 ├── hooks/           # Lifecycle hook 腳本
-├── profiles/        # 專案類型 profile（由 hook 動態載入）
+├── profiles/        # 專案類型 profile（由 hook 映射進當前專案的 .claude/）
 ├── rules/           # 跨專案共用規則（尚未建立）
 ├── agents/          # 自訂 subagent 定義（尚未建立）
-└── skills/          # 自訂 slash command 實作（尚未建立）
+└── skills/          # 自訂 slash command 實作
 ```
 
 ### CLAUDE.md
@@ -25,37 +25,31 @@ Claude Code 的全局設置倉庫。將 `~/.claude/` 下可版控的設置集中
 
 ### hooks/
 
-存放對應 Claude Code lifecycle 事件的 shell 腳本，並在 `settings.json` 的 `hooks` 欄位中宣告觸發條件。目前包含：
-
-| 檔案 | 事件 | 用途 |
-|------|------|------|
-| `load-profile.sh` | `SessionStart` | 偵測專案類型，動態注入對應 profile 的 CLAUDE.md |
-
-Hook 腳本從 stdin 接收 Claude Code 注入的 JSON context（含 `cwd`、`tool_name` 等欄位），以 exit code 0 表示成功、exit code 2 表示阻斷操作。
+存放對應 Claude Code lifecycle 事件的 shell 腳本。`load-profile.sh` 在 `SessionStart` 時偵測當前專案的語言/框架，把符合的 profile 內容 symlink 進**當前專案**的 `.claude/`。Hook 只負責這個確定性的檔案系統動作，內容什麼時候該真正載入 context，交給 Claude Code 原生的 rules（`paths:` frontmatter）與 skills（description 比對）機制決定，不由 hook 越俎代庖。
 
 ### profiles/
 
-依專案類型分組的設置集合，由 `hooks/load-profile.sh` 在 `SessionStart` 時根據專案特徵（如 `AndroidManifest.xml`、`build.gradle`）自動選取並輸出至 Claude Code 系統提示。每個 profile 是獨立目錄，結構與 `.claude/` 相同，可包含自己的 `CLAUDE.md`、`rules/`、`skills/` 等。
+依專案類型分組的設置集合，每個 profile 是獨立目錄，可包含自己的 `CLAUDE.md`、`rules/`、`skills/`、`detect.json`（宣告偵測條件）。新增 profile 只需新增目錄，不用改動 `hooks/load-profile.sh`。
 
 ### rules/（尚未建立）
 
-以獨立 Markdown 檔案封裝的模組化規則。支援在 YAML frontmatter 中設定 `paths` 欄位，讓規則僅在 Claude 操作符合路徑 glob 的檔案時才載入，減少無關規則佔用 context。
+跨專案共用（不限特定 profile）的模組化規則，結構與用法比照 `.claude/rules/` 原生機制：獨立 Markdown 檔案，可在 YAML frontmatter 設定 `paths` 欄位，讓規則僅在 Claude 操作符合路徑 glob 的檔案時才載入。
 
 ### agents/（尚未建立）
 
 自訂 subagent 的定義檔，每個 `.md` 檔描述一個專責特定任務的 subagent，含系統提示、可用工具與權限設定。全局 agents 存放於此目錄，專案級別則放在 `.claude/agents/`。
 
-### skills/（尚未建立）
+### skills/
 
-以目錄為單位封裝的可重用工作流，透過 `/skill-name` 呼叫。每個 skill 至少包含 `SKILL.md`（入口指引），可選擇性附加 `template.md`、`examples/` 及 `scripts/`。Skill 內容僅在呼叫時載入，不佔用平時的 context。
+以目錄為單位封裝的可重用工作流，透過 `/skill-name` 呼叫。每個 skill 至少包含 `SKILL.md`（入口指引），可選擇性附加 `templates/`、`examples/` 及 `scripts/`。Skill 內容僅在呼叫時載入，不佔用平時的 context。目前包含 `create-profile`（互動式 scaffold 新 profile）。
 
 ---
 
-### 排除的檔案與目錄
+### 不進版控的項目
 
-下列項目屬於 runtime 產物或機器本地狀態，不進版控：
+下列項目屬於 runtime 產物或機器本地狀態，不進版控——且會在安裝時被**完全清除**（見下方安裝章節的警告）：
 
-| 路徑 | 排除原因 |
+| 路徑 | 說明 |
 |------|----------|
 | `cache/` | 暫存資料，可自動重建 |
 | `sessions/`、`history.jsonl` | 對話記錄，含個人隱私 |
@@ -73,7 +67,7 @@ cd ~/path/to/global-configuration
 bash install.sh
 ```
 
-`install.sh` 會將倉庫中的每個受控項目複製並覆蓋至 `~/.claude/`（`cp -rf`）。僅處理倉庫中實際存在的項目。
+`install.sh` 會先完全清空並重建 `~/.claude/`，確保安裝結果與倉庫內容一致——這代表上方「不進版控的項目」會被永久刪除，無法復原，執行前會跳出確認提示。
 
 ## 版本
 
@@ -81,6 +75,6 @@ bash install.sh
 
 | 版本號 | 情境 |
 |--------|------|
-| PATCH | 修正現有規則措辭、修正 hook 邏輯 bug |
+| PATCH | 修正現有規則措辭、修正 hook/腳本邏輯 bug |
 | MINOR | 新增 profile、rule、skill 或 agent |
 | MAJOR | 破壞性變更（如調整目錄結構、修改 install.sh 行為）|

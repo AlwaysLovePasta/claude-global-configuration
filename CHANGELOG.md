@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning follows [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+- `hooks/load-profile.sh` 改為將偵測到的 profile 內容 symlink 進當前專案的 `.claude/`，不再把規則內容直接注入 context
+- profile 偵測邏輯改為讀取 `profiles/<name>/detect.json`，新增 profile 免修改 hook 腳本
+- `install.sh` 改為安裝前完全清空並重建 `~/.claude/`，且加上執行前確認提示避免誤刪本機狀態
+- `profiles/android/rules/architecture.md` 三層架構圖改用 mermaid 繪製，並補上 `paths:` frontmatter
+- `skills/create-profile/SKILL.md` 同步更新以反映上述機制變動
+
 ## [0.2.0] - 2026-06-25
 
 ### Added
