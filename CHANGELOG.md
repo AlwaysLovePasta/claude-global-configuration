@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning follows [SemVer](https://semver.org/).
 
-## [Unreleased]
+## [1.0.0] - 2026-09-05
 
 ### Changed
 - `hooks/load-profile.sh` 改為將偵測到的 profile 內容 symlink 進當前專案的 `.claude/`，不再把規則內容直接注入 context
