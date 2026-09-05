@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning follows [SemVer](https://semver.org/).
 
+## [2.0.0] - 2026-09-05
+
+### Changed
+- `install.sh` 清空 `~/.claude/` 時排除 `skills/`，保留本機既有、repo 未管理的個人 skill
+
 ## [1.0.0] - 2026-09-05
 
 ### Changed

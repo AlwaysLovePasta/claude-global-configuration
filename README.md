@@ -75,7 +75,7 @@ cd ~/path/to/global-configuration
 bash install.sh
 ```
 
-`install.sh` 會先完全清空並重建 `~/.claude/`，確保安裝結果與倉庫內容一致——這代表上方「不進版控的項目」會被永久刪除，無法復原，執行前會跳出確認提示。
+`install.sh` 會先清空並重建 `~/.claude/`（`skills/` 目錄除外），確保安裝結果與倉庫內容一致——這代表上方「不進版控的項目」會被永久刪除，無法復原，執行前會跳出確認提示。`skills/` 保留不刪，本機既有、repo 未管理的個人 skill 不受影響；repo 有同名 skill 時仍會以 repo 內容覆蓋。
 
 ## 版本
 
