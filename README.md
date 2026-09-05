@@ -25,7 +25,14 @@ Claude Code 的全局設置倉庫。將 `~/.claude/` 下可版控的設置集中
 
 ### hooks/
 
-存放對應 Claude Code lifecycle 事件的 shell 腳本。`load-profile.sh` 在 `SessionStart` 時偵測當前專案的語言/框架，把符合的 profile 內容 symlink 進**當前專案**的 `.claude/`。Hook 只負責這個確定性的檔案系統動作，內容什麼時候該真正載入 context，交給 Claude Code 原生的 rules（`paths:` frontmatter）與 skills（description 比對）機制決定，不由 hook 越俎代庖。
+存放對應 Claude Code lifecycle 事件的 shell 腳本，「建立」與「清除」成對存在：
+
+| Lifecycle 事件 | 職責 |
+|---|---|
+| `SessionStart` | 偵測當前專案類型，把符合的 profile 內容 symlink 進**當前專案**的 `.claude/` |
+| `SessionEnd` | session 正常結束（`/clear`、`/exit`、登出）時清除上面建立的 symlink；接續舊 session 的 `resume` 不觸發，因為工作尚未結束 |
+
+Hook 只負責這些確定性的檔案系統動作，內容什麼時候該真正載入 context，交給 Claude Code 原生的 rules（`paths:` frontmatter）與 skills（description 比對）機制決定，不由 hook 越俎代庖。
 
 ### profiles/
 
