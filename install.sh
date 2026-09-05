@@ -9,7 +9,7 @@ CLAUDE_DIR="$HOME/.claude"
 # projects/ 含 auto memory、settings.local.json），且無法復原。
 # 例外：skills/ 保留不刪，本機既有、repo 未管理的個人 skill 不受影響。
 if [[ -d "$CLAUDE_DIR" ]]; then
-  read -r -p "此操作將清空並重建 $CLAUDE_DIR（skills/ 除外），包含對話紀錄與 auto memory，且無法復原。是否繼續？[y/N] " confirm
+  read -r -p "此操作將清空並重建 ${CLAUDE_DIR}（skills/ 除外），包含對話紀錄與 auto memory，且無法復原。是否繼續？[y/N] " confirm
   if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
     echo "已取消。"
     exit 1
