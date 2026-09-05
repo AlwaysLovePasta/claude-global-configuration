@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning follows [SemVer](https://semver.org/).
 
+## [2.1.0] - 2026-09-05
+
+### Added
+- 新增 `SessionEnd` hook（`hooks/session-end.sh`），session 正常結束（`/clear`、`/exit`、登出）時立即清除 `load-profile.sh` 建立的 profile symlink，不再需要等到下次 SessionStart
+
+### Changed
+- `hooks/load-profile.sh` 拆分為 `detect-profile.sh`（偵測符合的 profile）與 `link-profile.sh`（symlink 建立、git `info/exclude` 維護），`load-profile.sh` 改為純協調角色
+- SessionStart 不再前置清除上次殘留的 symlink（改由 SessionEnd hook 負責），簡化為「開始建立、結束清除」的單向流程
+
 ## [2.0.0] - 2026-09-05
 
 ### Changed
